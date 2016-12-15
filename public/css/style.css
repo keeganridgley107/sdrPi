@@ -246,9 +246,6 @@ p {
 .info-row {
   margin-bottom: 5px;
 }
-.egg-nog{
-  width: 600px;
-}
 .nav-links {
   display:inline;
   text-align: right;
@@ -263,6 +260,8 @@ p {
 }
 .egg-load-screenshot{
   width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .pic-margin{
   margin-top: 15px;
