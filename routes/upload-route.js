@@ -13,6 +13,7 @@ var http = require('http');
 
 
 const authorize = function(req, res, next) {
+
     const token = req.cookies.token;
     jwt.verify(token, privateKey, (err, decoded) => {
         if (err) {
@@ -99,16 +100,17 @@ router.post('/', authorize, function(req, res, next) {
                         });
                 });
         });
-
     });
 
-    // log any errors that occur
-    form.on('error', function(err) {
-        console.log('An error has occured: \n' + err);
-    });
+  });
 
-    // parse the incoming request containing the form data
-    form.parse(req);
+  // log any errors that occur
+  form.on('error', function(err) {
+    console.log('An error has occured: \n' + err);
+  });
+
+  // parse the incoming request containing the form data
+  form.parse(req);
 
 });
 
@@ -147,7 +149,9 @@ router.delete('/', authorizeAdmin, (req, res, next) => {
                         });
                 }
             });
-    });
+        }
+      });
+  });
 });
 
 
