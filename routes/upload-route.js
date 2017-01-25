@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const express = require('express');
 const router = express.Router();
@@ -100,18 +100,17 @@ router.post('/', authorize, function(req, res, next) {
             });
         });
     });
+
+
+    // log any errors that occur
+    form.on('error', function(err) {
+      console.log('An error has occured: \n' + err);
+    });
+
+    // parse the incoming request containing the form data
+    form.parse(req);
+
   });
-
-});
-
-// log any errors that occur
-form.on('error', function(err) {
-  console.log('An error has occured: \n' + err);
-});
-
-// parse the incoming request containing the form data
-form.parse(req);
-
 });
 
 const authorizeAdmin = function(req, res, next) {
@@ -130,7 +129,7 @@ const authorizeAdmin = function(req, res, next) {
 };
 
 router.delete('/', authorizeAdmin, (req, res, next) => {
-fs.unlink(__dirname + "/../public/" + req.body.fileName, function() {
+  fs.unlink(__dirname + "/../public/" + req.body.fileName, function() {
     knex('uploads')
       .where({
         category: req.body.fileName
@@ -147,13 +146,10 @@ fs.unlink(__dirname + "/../public/" + req.body.fileName, function() {
             .catch((err) => {
               next(boom.create(500, 'Failed to delete file'));
             });
+
         }
       });
-  }
+  });
 });
-});
-});
-
-
 
 module.exports = router;
