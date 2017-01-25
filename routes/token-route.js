@@ -1,4 +1,5 @@
 'use strict';
+
 const express = require('express');
 const router = express.Router();
 const knex = require('../knex');
@@ -6,7 +7,6 @@ const boom = require('boom');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const privateKey = 'my_awesome_cookie_signing_key';
-var http = require('http');
 
 
 router.get('/', function(req, res, next) {
@@ -24,7 +24,8 @@ router.post('/', function(req, res, next) {
         email: req.body.email,
         password: req.body.password,
     };
-
+    console.log(req.body);
+    console.log(req.body.email+"  "+req.body.password);	
     var errObj = {
         email: boom.create(400, 'Email must not be blank'),
         password: boom.create(400, 'Password must not be blank')
@@ -44,27 +45,23 @@ router.post('/', function(req, res, next) {
                 if (bcrypt.compareSync(bodyObj.password, result.password)) {
                     delete result.password;
                     delete result.created_at;
+                    delete result.updated_at;
                     // var authenticated_user = (result);
                     var token = jwt.sign(req.body.email, privateKey);
                     res.cookie('token', token, {
                         httpOnly: true
                     }).send(result);
-                    var options = {
-                      port: '8000',
-                      path: '/serialport/Log%20in:%20/' + req.body.email
-                    };
-                    http.request(options).end();
                 } else {
                     // bad password (says email or password to satisfy the test)
-                    next(boom.create(400, 'Bad email or password'));
+                    next(boom.create(400, 'Bad password'));
                 }
             } else {
                 // bad email (says email or password to satisfy the test)
-                next(boom.create(400, 'Bad email or password'));
+                next(boom.create(400, 'Bad email'));
             }
         })
         .catch((err) => {
-            next(err);
+            next(boom.create(500, 'Database Inaccessible. Unable to find User'));
         });
 });
 

@@ -1,4 +1,5 @@
 'use strict';
+
 const express = require('express');
 const router = express.Router();
 const knex = require('../knex');
@@ -15,7 +16,7 @@ const authorize = function(req, res, next) {
     const token = req.cookies.token;
     jwt.verify(token, privateKey, (err, decoded) => {
         if (err) {
-            return res.redirect('/signin.html');
+            next(boom.create(400, 'Failed to decode token'));
         }
         req.token = decoded;
         next();
@@ -33,7 +34,7 @@ router.get('/', authorize, function(req, res, next) {
             res.send(result);
         })
         .catch((err) => {
-            next(err);
+            next(boom.create(500, 'Database query failed'));
         });
 });
 
@@ -91,17 +92,10 @@ router.post('/', authorize, function(req, res, next) {
                             user_id: user.id
                         }, '*')
                         .then((result) => {
-                            res.end('success\n' + result);
-                            var options = {
-                                // host: 'localhost',
-                                port: '8000',
-                                // path: '/serialport/' + 'Log in: ' + '/' + req.token
-                                path: '/serialport/File%20/Uploaded!'
-                            };
-                            http.request(options).end();
+                            res.end('success\n'+result);
                         })
                         .catch((err) => {
-                            next(err);
+                            next(boom.create(500, 'Failed to upload file'));
                         });
                 });
         });
@@ -117,18 +111,27 @@ router.post('/', authorize, function(req, res, next) {
     form.parse(req);
 
 });
-// router.use(function (req, res, next) {
-//   if(req.token === 'dinkydinky@gmail.com'){
-//     next();
-//   } else {
-//     res.sendStatus(401);
-//   }
-// });
-router.delete('/', (req, res, next) => {
-    fs.unlink(__dirname + "/../public/" + req.body.fileCat, function() {
+
+const authorizeAdmin = function(req, res, next) {
+    const token = req.cookies.token;
+    jwt.verify(token, privateKey, (err, decoded) => {
+        if (err) {
+            next(boom.create(400, 'Failed to decode token'));
+        }
+        req.token = decoded;
+        if(req.token === 'dinkydinky@gmail.com'){
+     next();
+   } else {
+     next(boom.create(401, 'Unauthorized User'));
+   }
+    });
+};
+
+router.delete('/', authorizeAdmin, (req, res, next) => {
+    fs.unlink(__dirname + "/../public/" + req.body.fileName, function() {
         knex('uploads')
             .where({
-                category: req.body.fileCat
+                category: req.body.fileName
             })
             .first()
             .then((result) => {
@@ -140,7 +143,7 @@ router.delete('/', (req, res, next) => {
                             res.end('success\n' + result);
                         })
                         .catch((err) => {
-                            next(err);
+                            next(boom.create(500, 'Failed to delete file'));
                         });
                 }
             });

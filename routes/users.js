@@ -12,7 +12,7 @@ const authorize = function(req, res, next) {
   const token = req.cookies.token;
   jwt.verify(token, privateKey, (err, decoded) => {
     if (err) {
-      return res.redirect('/signin.html');
+      next(boom.create(400, 'Failed to decode token'));
     }
     req.token = decoded;
     next();
@@ -20,22 +20,14 @@ const authorize = function(req, res, next) {
 };
 
 router.get('/', authorize, function(req, res, next) {
-  jwt.verify(req.cookies.token, privateKey, function(err, decoded) {
-      if (err) {
-        // next(boom.create(401, 'Unauthorized'));
-        res.redirect('/signin.html');
-        return;
-      } else {
-        knex('users')
-          .orderBy('username')
-          .then((result) => {
-            res.send(result);
-          })
-          .catch((err) => {
-            next(err);
-          });
-      }
-    });
+	knex('users')
+	  .orderBy('username')
+	  .then((result) => {
+		res.send(result);
+	  })
+	  .catch((err) => {
+		next(boom.create(500, 'Database Query Failed'));
+	  });
 });
 
 router.get('/:username', authorize, function(req, res, next) {
@@ -47,11 +39,11 @@ router.get('/:username', authorize, function(req, res, next) {
       if (results) {
         res.send(results);
       } else {
-        res.sendStatus(404);
+        next(boom.create(404, 'No user by that name'));
       }
     })
     .catch(function(err) {
-      next(err);
+      next(boom.create(500, 'Database Query Failed'));
     });
 });
 
@@ -70,13 +62,12 @@ router.post('/', (req, res, next) => {
           })
           .then(function(result) {
             res.send(result);
-            // res.sendStatus(200);
           })
           .catch(function(err) {
-            next(err);
+            next(boom.create(500, 'Failed to create User'));
           });
       } else {
-        res.status(400).send('User Already Exists');
+        next(boom.create(400, 'User Already Exists'));
       }
     });
 });
@@ -100,10 +91,10 @@ router.patch('/:id', authorize, function(req, res, next) {
               res.send(result[0]);
             })
             .catch((err) => {
-              next(err);
+              next(boom.create(500, 'Failed to Update User Info'));
             });
         } else {
-          next(boom.create(404, 'Not Found'));
+          next(boom.create(404, 'User Not Found'));
           return;
         }
       } else {
@@ -113,15 +104,15 @@ router.patch('/:id', authorize, function(req, res, next) {
     });
 });
 
-router.delete('/:username', authorize, function(req, res, next) {
+router.delete('/:id', authorize, function(req, res, next) {
   knex('users')
-    .where({ username: req.params.username })
+    .where({ id: req.params.id })
     .del()
     .then(function() {
       res.sendStatus(200);
     })
     .catch(function(err) {
-      next(err);
+      next(boom.create(500, 'Failed to delete user'));
     });
 });
 
