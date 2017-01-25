@@ -10,7 +10,10 @@ const privateKey = 'my_awesome_cookie_signing_key';
 const boom = require('boom');
 var http = require('http');
 var path = require('path');
+var cors = require('./routes/cors');
 
+
+app.use(cors);
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));

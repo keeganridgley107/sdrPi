@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 const express = require('express');
 const router = express.Router();
@@ -102,8 +102,6 @@ router.post('/', authorize, function(req, res, next) {
         });
     });
 
-  });
-
   // log any errors that occur
   form.on('error', function(err) {
     console.log('An error has occured: \n' + err);
@@ -149,11 +147,6 @@ router.delete('/', authorizeAdmin, (req, res, next) => {
                         });
                 }
             });
-        }
-      });
-  });
-});
-
-
-
+        });
+   });
 module.exports = router;
