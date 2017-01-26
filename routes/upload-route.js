@@ -25,7 +25,7 @@ const authorize = function(req, res, next) {
 };
 
 
-router.get('/', authorize, function(req, res, next) {
+router.get('/', function(req, res, next) {
 
     knex('uploads')
         .join('users', 'users.id', '=', 'uploads.user_id')

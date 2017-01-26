@@ -50,7 +50,7 @@ router.post('/', function(req, res, next) {
                     var token = jwt.sign(req.body.email, privateKey);
                     res.cookie('token', token, {
                         httpOnly: true
-                    }).send(result);
+                    }).send({ 'token': token, 'id': result.id, 'username': result.username});
                 } else {
                     // bad password (says email or password to satisfy the test)
                     next(boom.create(400, 'Bad password'));

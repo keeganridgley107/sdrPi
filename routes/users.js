@@ -30,23 +30,21 @@ router.get('/', authorize, function(req, res, next) {
 	  });
 });
 
-router.get('/:username', authorize, function(req, res, next) {
+router.get('/:id', function(req, res, next) {
   knex('users')
-    .select('username')
-    .where({ username: req.params.username })
+    .where({ id: req.params.id })
     .first()
     .then(function(results) {
       if (results) {
         res.send(results);
       } else {
-        next(boom.create(404, 'No user by that name'));
+        next(boom.create(404, 'No user matching that id'));
       }
     })
     .catch(function(err) {
       next(boom.create(500, 'Database Query Failed'));
     });
 });
-
 
 router.post('/', (req, res, next) => {
   var hash = bcrypt.hashSync(req.body.password, 8);

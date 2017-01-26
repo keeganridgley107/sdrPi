@@ -12,7 +12,6 @@ var http = require('http');
 var path = require('path');
 var cors = require('./routes/cors');
 
-
 app.use(cors);
 app.use(cookieParser());
 app.use(bodyParser.json());
