@@ -51,15 +51,27 @@ router.post('/', (req, res, next) => {
   knex('users')
     .where({ username: req.body.username })
     .then(function(results) {
+		console.log("results" + results);
+	
       if (results.length === 0) {
         knex('users')
           .insert({
             username: req.body.username,
             password: hash,
-            email: req.body.email
-          })
+            email: req.body.email,
+            created_at: new Date(),
+            avatar_path: '../public/images/egg.png'
+          }, '*')
           .then(function(result) {
-            res.send(result);
+			console.log('user created:',result);
+			let userData=result[0];
+			delete userData.password;
+			delete userData.created_at;
+			delete userData.updated_at;
+			userData.avatarPath=userData.avatar_path;
+			delete userData.avatar_path;
+			console.log('user data returned:',userData);
+            res.send(userData);
           })
           .catch(function(err) {
             next(boom.create(500, 'Failed to create User'));

@@ -52,11 +52,11 @@ router.post('/', function(req, res, next) {
                         httpOnly: true
                     }).send({ 'token': token, 'id': result.id, 'username': result.username});
                 } else {
-                    // bad password (says email or password to satisfy the test)
+                    // bad password
                     next(boom.create(400, 'Bad password'));
                 }
             } else {
-                // bad email (says email or password to satisfy the test)
+                // bad email
                 next(boom.create(400, 'Bad email'));
             }
         })
