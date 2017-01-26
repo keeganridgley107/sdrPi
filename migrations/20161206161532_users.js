@@ -10,7 +10,9 @@ exports.up = function(knex, Promise) {
     // email
     table.string('email').notNullable();
     // created_at
-    table.timestamps(true, false);
+    table.timestamps(true, true);
+    // create path to avatar image
+    table.string('avatar_path').notNullable();
   })
 };
 

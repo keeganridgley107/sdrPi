@@ -20,14 +20,14 @@ const authorize = function(req, res, next) {
 };
 
 router.get('/', authorize, function(req, res, next) {
-	knex('users')
-	  .orderBy('username')
-	  .then((result) => {
-		res.send(result);
-	  })
-	  .catch((err) => {
-		next(boom.create(500, 'Database Query Failed'));
-	  });
+  knex('users')
+    .orderBy('username')
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((err) => {
+      next(boom.create(500, 'Database Query Failed'));
+    });
 });
 
 router.get('/:username', authorize, function(req, res, next) {
@@ -50,6 +50,11 @@ router.get('/:username', authorize, function(req, res, next) {
 
 router.post('/', (req, res, next) => {
   var hash = bcrypt.hashSync(req.body.password, 8);
+  var iconIndex = Math.floor((Math.random() * 10) - 1);
+  var iconArray = [
+
+  ]
+
   knex('users')
     .where({ username: req.body.username })
     .then(function(results) {
@@ -58,7 +63,9 @@ router.post('/', (req, res, next) => {
           .insert({
             username: req.body.username,
             password: hash,
-            email: req.body.email
+            email: req.body.email,
+            created_at: new Date(),
+            avatar_path: "../public/images/keegan.jpg"
           })
           .then(function(result) {
             res.send(result);
@@ -84,7 +91,8 @@ router.patch('/:id', authorize, function(req, res, next) {
             .update({
               username: req.body.username,
               password: bcrypt.hashSync(req.body.password, 8),
-              email: req.body.email
+              email: req.body.email,
+              updated_at: req.body.updated_at
             }, '*')
             .then((result) => {
               //TODO: don't send password back on a successfull patch
