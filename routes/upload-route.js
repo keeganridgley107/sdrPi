@@ -24,7 +24,6 @@ const authorize = function(req, res, next) {
     });
 };
 
-
 router.get('/', function(req, res, next) {
 
     knex('uploads')

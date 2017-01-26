@@ -25,6 +25,7 @@
     "body-parser": "^1.15.2",
     "boom": "^4.2.0",
     "cookie-parser": "^1.4.3",
+    "cordova-plugin-streaming-media": "^1.0.2",
     "engines": {
       "node": "v7.2.0"
     },

@@ -12,11 +12,13 @@ var http = require('http');
 var path = require('path');
 var cors = require('./routes/cors');
 
+
 app.use(cors);
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(morgan('short'));
+
 
 const authorize = function(req, res, next) {
   console.log(req.cookie);
